@@ -22,6 +22,6 @@ There are 16 different paths a room can have
 <li>one opening on left</li>
 <li>one opening on bottom</li>
 </ol>
-NOTE: 12 - 15 are only used in corner tiles
+NOTE: in code these paths are 0 indexed so subtract one from each of these to recogize it in code
 
 <p>Each level tile has its own rule for which type of path can be generated for the room which lives in that tile. This is so you dont have paths going off level.</p>
