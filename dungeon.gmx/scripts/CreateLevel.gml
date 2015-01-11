@@ -7,7 +7,7 @@ for(a=0;a<lvl_x;a++) {
     for(b=0;b<lvl_y;b++) {
         if(a == 0 && b == 0) {//top left corner
             show_debug_message("top left corner");
-            current_type = choose(0, 6, 12, 15);
+            current_type = choose(0, 6, 6, 12, 15);
         }else if(a == 0 && b > 0 && b < lvl_y - 1) { //left side but not top or bottom
             show_debug_message("left side but not top or bottom");
             rm_type_above = ds_grid_get(lvl_grid_types, a, b-1);
@@ -15,13 +15,13 @@ for(a=0;a<lvl_x;a++) {
                 case 0:
                 case 8:
                 case 12:
-                    current_type = choose(0, 6);
+                    current_type = choose(0, 6, 6);
                     break;
                 case 15:
-                    current_type = choose(5, 8, 10);
+                    current_type = choose(5, 5, 8, 10, 10);
                     break;
                 default:
-                    current_type = choose(5, 8, 10);
+                    current_type = choose(5, 5, 8, 10, 10);
                     break;
             }
         }else if(a == 0 && b == lvl_y - 1) { //bottom left corner
@@ -33,7 +33,7 @@ for(a=0;a<lvl_x;a++) {
                     current_type = choose(0, 12);
                     break;
                 default:
-                    current_type = choose(8, 13);
+                    current_type = 8;
                     break;
             }
         }else if(a > 0 && a < lvl_x - 1 && b == 0) { //top middle rooms
@@ -43,10 +43,10 @@ for(a=0;a<lvl_x;a++) {
                 case 0:
                 case 7:
                 case 15:
-                    current_type = choose(0, 6);
+                    current_type = choose(0, 6, 6);
                     break;
                 default:
-                    current_type = choose(1, 2, 7);
+                    current_type = choose(1, 2, 2, 7);
                     break;
             }
         }else if(a > 0 && a < lvl_x - 1 && b > 0 && b < lvl_y - 1) { //middle rooms with rooms on all sides of them
@@ -60,14 +60,14 @@ for(a=0;a<lvl_x;a++) {
                 case 8:
                 case 9: //no path from above
                     if(rm_type_left == 1 || rm_type_left == 2 || rm_type_left == 3 || rm_type_left == 4 || rm_type_left == 6 || rm_type_left == 8 || rm_type_left == 10){ //a path from the left
-                        current_type = choose(1,2,7);
+                        current_type = choose(1, 2, 2, 7);
                     }else {//no path from the left
-                        current_type = 0;
+                        current_type = choose(0, 6, 6);
                     }
                     break;
                 default: //a path from above
                     if(rm_type_left == 1 || rm_type_left == 2 || rm_type_left == 3 || rm_type_left == 4 || rm_type_left == 6 || rm_type_left == 8 || rm_type_left == 10){//a path from the left
-                        current_type = choose(3,4,9,11);
+                        current_type = choose(3,4,3,4,9,11,11);
                     }else {//no path from the left
                         current_type = choose(5,8,10);
                     }
@@ -91,7 +91,7 @@ for(a=0;a<lvl_x;a++) {
                     break;
                 default: //a path from above
                     if(rm_type_left == 1 || rm_type_left == 3 || rm_type_left == 8 || rm_type_left == 12){//a path from the left
-                        current_type = choose(3, 9);
+                        current_type = 3;
                     }else {//no path from the left
                         current_type = 8;
                     }
@@ -106,7 +106,7 @@ for(a=0;a<lvl_x;a++) {
                     current_type = choose(0, 15);
                     break;
                 default:
-                    current_type = choose(7, 14);
+                    current_type = choose(7, 7, 7, 14);
                     break;
             }
         }else if(a == lvl_x - 1 && b > 0 && b < lvl_y - 1) { //middle right side
@@ -117,15 +117,15 @@ for(a=0;a<lvl_x;a++) {
                 case 0:
                 case 9:
                 case 14: //no path from above
-                    if(rm_type_left == 1 || rm_type_left == 2 || rm_type_left == 8 || rm_type_left == 3 || rm_type_left == 4 || rm_type_left == 10){ //a path from the left
+                    if(rm_type_left == 1 || rm_type_left == 2 || rm_type_left == 6 || rm_type_left == 8 || rm_type_left == 3 || rm_type_left == 4 || rm_type_left == 10){ //a path from the left
                         current_type = 7;
                     }else {//no path from the left
                         current_type = 0;
                     }
                     break;
                 default: //a path from above
-                    if(rm_type_left == 1 || rm_type_left == 2 || rm_type_left == 8 || rm_type_left == 3 || rm_type_left == 4 || rm_type_left == 10){//a path from the left
-                        current_type = choose(9, 11);
+                    if(rm_type_left == 1 || rm_type_left == 2 || rm_type_left == 6 || rm_type_left == 8 || rm_type_left == 3 || rm_type_left == 4 || rm_type_left == 10){//a path from the left
+                        current_type = choose(9, 11, 11, 11);
                     }else {//no path from the left
                         current_type = 5;
                     }
