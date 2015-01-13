@@ -25,39 +25,60 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>rm_controller = instance_nearest(x,y,obj_KJ_RoomController);
+            <string>//you actually wont use this line because it is really only used for the input and re-generatoring
+rm_controller = instance_nearest(x,y,obj_KJ_RoomController);
 
+//i call this variable speed because this is how we move the generator on a map
+//but this is really the dimensions of your game 16x16, 32x32, 64x64, etc
+spd = 32;
+
+//this is how big we want our level to be
 lvl_x = 4;
 lvl_y = 4;
 
+//this is how big we want our rooms to be.
+//this is really important to figure out first
+//20 x 15 is actually giving the room a 640 x 480 res
+//640 / spd(sprite dimension) = 20
+//480 / spd(sprite dimension) = 15
 rm_x = 20;
 rm_y = 15;
 
-spd = 32;
-
+//we need to know where the generator first started
+//so we can know how to reset the X and Y when reseting
 startX = x;
 startY = y;
-xx = x;
-yy = y;
 
+//this grid will hold the room grid with the actual values for the room
 lvl_grid_values = ds_grid_create(4,4);
+//this grid is just holding the type for each room and where it is on the level
 lvl_grid_types = ds_grid_create(4,4);
 
+//i just set these initially to noone because these get set every loop
 current_room = noone;
 current_type = noone;
 
-
+//zerocount is a loop counter that helps keep track of the number of zeros chosen
 zerocount = 0;
+//zerosAllowed deteremines the number of zeros we don't want on a level {value}+ 
+zerosAllowed = 4;
+//this may seek a little weird to have 
+//but this allows the CreateLevel script to rerun if we went over our Allowed Zero limit
 runCreateLevel = true;
 while(runCreateLevel) {
-    CreateLevel();
-    
+    //call CreateLevel
+    CreateLevel();  
 }
 
+//c_ variables are for the actual placement of objects on the map
+
+//rm_x and rm_y are keeping track of which room tile we are on
 c_rm_x = 0;
 c_rm_y = 0;
+//lvl_x and lvl_y are keeping tack of which level tile we are on
 c_lvl_x = 0;
 c_lvl_y = 0;
+//this will be set to the object we want to lay down.
 c_obj = noone;
 </string>
           </argument>
@@ -81,43 +102,74 @@ c_obj = noone;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>c_obj = ds_grid_get(ds_grid_get(lvl_grid_values, c_lvl_x, c_lvl_y), c_rm_x, c_rm_y);
+            <string>//the inner most grid was {current_room} when it was set so this is a grid
+//so hence we wrap that in another grid with the starting rm_x and rm_y
+//just remember that we dont increment the level as much as the room.
+//the level just needs to loop once to cover all rooms/tiles
+//
+//the room will loop equal to how ever many level tiles there are
+c_obj = ds_grid_get(ds_grid_get(lvl_grid_values, c_lvl_x, c_lvl_y), c_rm_x, c_rm_y);
 
-if(c_obj == 0) {
+if(c_obj == 0) { //0: wall
     instance_create(x,y,obj_wall);
-}else if(c_obj == 1) {
+}else if(c_obj == 1) {//1: floor
     instance_create(x,y,obj_floor);
-}else if(c_obj == 2) {
+}else if(c_obj == 2) {//2: path/where doors go
     instance_create(x,y,obj_Path);
 }
 
+//I'll admit the rest of this script was, for me at least, the hardest to get my head wrapped around
+//mainly how to increment each counter
 
+//this first condition means we have reach our last tile of our room 
+//and will need to start a new room
 if(c_rm_x == rm_x - 1 &amp;&amp; c_rm_y == rm_y - 1) {
     c_rm_x = 0;
     c_rm_y = 0;
     
+    //this if condition actually determines if we are completely done with level generation
     if(c_lvl_x == lvl_x - 1 &amp;&amp; c_lvl_y == lvl_y - 1) {
+        //this is completely removeable.
+        //we just use this 'canSpawnAnother' variable so we can hit 'r' and regenerate a room
         rm_controller.canSpawnAnother = true;
+        
+        
+        
+        //i added a lot of space so you didn't think i meant this line is removeable because it is not
+        //were done so we can die now.
         instance_destroy();
     }else {
+        //since were not the at the last tile we can keep moving
+        //
+        //this if condition determines if we are at the last y tile
+        //which means we need to start y over and increment x
         if(c_lvl_y == lvl_y - 1) {
             c_lvl_y = 0;  
-            c_lvl_x += 1;  
+            c_lvl_x += 1; 
+            //ok heres where i meant it gets complicated
+            //x needs start a startX plus the number of lvl_x times the sprite dimensions
+            //y is pretty much the same just in the y direction.
+            //just remember that one room tile is actually many many sprite dimensions
+            //example: 32 bit game with res at 640 x 480
+            //this will be 640 units per level tile 
             x = startX + ((c_lvl_x * rm_x) * spd) + (c_rm_x * spd);
             y = ((c_lvl_y * rm_y) * spd) + (spd + c_rm_y) + spd;
         }else {
             c_lvl_y += 1;
+            //see last large comment
             x = startX + ((c_lvl_x * rm_x) * spd) + (c_rm_x * spd);
             y = ((c_lvl_y * rm_y) * spd) + (spd + c_rm_y) + spd;
         }
     }
-}else if(c_rm_x &lt; rm_x - 1 &amp;&amp; c_rm_y == rm_y - 1) {
+}else if(c_rm_x &lt; rm_x - 1 &amp;&amp; c_rm_y == rm_y - 1) { //this meeans our room movement needs to start back over from the top on next column
     c_rm_x += 1;
     c_rm_y = 0;
+    //x and y are not moving in the smaller increments of the room creation
     x = startX + ((c_lvl_x * rm_x) * spd) + (c_rm_x * spd);
-    //x = (((c_lvl_x * rm_x) + c_rm_x) * spd) + startX;
     y = (c_lvl_y * rm_y * spd) + startY;
-}else {
+}else { 
+    //this is going to happen the majority of the time
+    //room y is just being incremented
     c_rm_y += 1;
     y += spd;
 }
